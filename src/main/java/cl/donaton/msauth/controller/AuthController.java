@@ -6,8 +6,12 @@ import cl.donaton.msauth.dto.RegisterRequest;
 import cl.donaton.msauth.dto.UsuarioDto;
 import cl.donaton.msauth.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -29,5 +33,11 @@ public class AuthController {
     @GetMapping("/me")
     public ResponseEntity<UsuarioDto> me() {
         return ResponseEntity.ok(authService.getCurrentUser());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, String>> handleAuthException(AuthenticationException e) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(Map.of("message", "Credenciales incorrectas"));
     }
 }
