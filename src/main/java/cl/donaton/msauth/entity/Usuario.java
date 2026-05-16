@@ -38,6 +38,15 @@ public class Usuario implements UserDetails {
     @Column(nullable = false)
     private LocalDateTime fechaRegistro;
 
+    @Column(length = 12)
+    private String rut;
+
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(length = 80)
+    private String region;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));

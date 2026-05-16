@@ -33,6 +33,9 @@ public class AuthService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .rol(request.getRol() != null ? request.getRol() : Rol.DONANTE)
                 .fechaRegistro(LocalDateTime.now())
+                .rut(request.getRut())
+                .telefono(request.getTelefono())
+                .region(request.getRegion())
                 .build();
         usuarioRepository.save(usuario);
         String token = jwtService.generateToken(Map.of("roles", usuario.getRol()), usuario);
