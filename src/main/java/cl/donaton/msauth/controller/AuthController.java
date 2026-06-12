@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.dao.DataIntegrityViolationException;
+
 import java.util.Map;
 
 @RestController
@@ -39,5 +41,11 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> handleAuthException(AuthenticationException e) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(Map.of("message", "Credenciales incorrectas"));
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDuplicateEmail(DataIntegrityViolationException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "El email ya está registrado"));
     }
 }
