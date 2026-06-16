@@ -38,7 +38,7 @@ public class AuthService {
                 .region(request.getRegion())
                 .build();
         usuarioRepository.save(usuario);
-        String token = jwtService.generateToken(Map.of("roles", usuario.getRol()), usuario);
+        String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
         return new AuthResponse(token, usuario.getEmail(), usuario.getRol());
     }
 
@@ -47,7 +47,7 @@ public class AuthService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
         var usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
-        String token = jwtService.generateToken(Map.of("roles", usuario.getRol()), usuario);
+        String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
         return new AuthResponse(token, usuario.getEmail(), usuario.getRol());
     }
 
