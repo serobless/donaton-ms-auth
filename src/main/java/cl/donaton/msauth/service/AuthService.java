@@ -39,7 +39,7 @@ public class AuthService {
                 .build();
         usuarioRepository.save(usuario);
         String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
-        return new AuthResponse(token, usuario.getEmail(), usuario.getRol());
+        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre());
     }
 
     public AuthResponse login(LoginRequest request) {
@@ -48,7 +48,7 @@ public class AuthService {
         );
         var usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
         String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
-        return new AuthResponse(token, usuario.getEmail(), usuario.getRol());
+        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre());
     }
 
     public UsuarioDto getCurrentUser() {

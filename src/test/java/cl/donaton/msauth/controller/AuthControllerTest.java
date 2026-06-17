@@ -51,7 +51,7 @@ class AuthControllerTest {
         request.setEmail("user@test.com");
         request.setPassword("password123");
 
-        AuthResponse response = new AuthResponse("mocked-token", "user@test.com", Rol.DONANTE);
+        AuthResponse response = new AuthResponse("mocked-token", "user@test.com", Rol.DONANTE, "Usuario Test");
         when(authService.login(any(LoginRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/auth/login")
@@ -102,7 +102,7 @@ class AuthControllerTest {
         request.setPassword("pass123");
         request.setRut("12345678-9");
 
-        AuthResponse response = new AuthResponse("mocked-token", "benja@test.com", Rol.DONANTE);
+        AuthResponse response = new AuthResponse("mocked-token", "benja@test.com", Rol.DONANTE, "Benja");
         when(authService.register(any(RegisterRequest.class))).thenReturn(response);
 
         mockMvc.perform(post("/auth/register")
