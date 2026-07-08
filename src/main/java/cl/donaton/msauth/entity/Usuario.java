@@ -47,6 +47,12 @@ public class Usuario implements UserDetails {
     @Column(length = 80)
     private String region;
 
+    @Column(length = 150)
+    private String nombreEmpresa;
+
+    @Column(length = 20)
+    private String rutEmpresa;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));

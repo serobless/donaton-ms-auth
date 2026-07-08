@@ -16,4 +16,7 @@ public class RegisterRequest {
 
     private String telefono;
     private String region;
+    private String nombreEmpresa;
+    private String rutEmpresa;
+    private boolean esEmpresa;
 }

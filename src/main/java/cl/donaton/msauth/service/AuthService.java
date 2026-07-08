@@ -27,15 +27,20 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {
+        Rol rol = request.isEsEmpresa() ? Rol.EMPRESA
+                : (request.getRol() != null ? request.getRol() : Rol.DONANTE);
+
         var usuario = Usuario.builder()
                 .nombre(request.getNombre())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .rol(request.getRol() != null ? request.getRol() : Rol.DONANTE)
+                .rol(rol)
                 .fechaRegistro(LocalDateTime.now())
                 .rut(request.getRut())
                 .telefono(request.getTelefono())
                 .region(request.getRegion())
+                .nombreEmpresa(request.getNombreEmpresa())
+                .rutEmpresa(request.getRutEmpresa())
                 .build();
         usuarioRepository.save(usuario);
         String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
