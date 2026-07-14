@@ -1,0 +1,64 @@
+package cl.donaton.msauth.service;
+
+import cl.donaton.msauth.dto.AuthResponse;
+import cl.donaton.msauth.dto.LoginRequest;
+import cl.donaton.msauth.dto.RegisterRequest;
+import cl.donaton.msauth.dto.UsuarioDto;
+import cl.donaton.msauth.entity.Rol;
+import cl.donaton.msauth.entity.Usuario;
+import cl.donaton.msauth.repository.UsuarioRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UsuarioRepository usuarioRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+
+    public AuthResponse register(RegisterRequest request) {
+        Rol rol = request.isEsEmpresa() ? Rol.EMPRESA
+                : (request.getRol() != null ? request.getRol() : Rol.DONANTE);
+
+        var usuario = Usuario.builder()
+                .nombre(request.getNombre())
+                .email(request.getEmail())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .rol(rol)
+                .fechaRegistro(LocalDateTime.now())
+                .rut(request.getRut())
+                .telefono(request.getTelefono())
+                .region(request.getRegion())
+                .nombreEmpresa(request.getNombreEmpresa())
+                .rutEmpresa(request.getRutEmpresa())
+                .build();
+        usuarioRepository.save(usuario);
+        String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
+        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre());
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+        var usuario = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
+        String token = jwtService.generateToken(Map.of("roles", usuario.getRol(), "nombre", usuario.getNombre()), usuario);
+        return new AuthResponse(token, usuario.getEmail(), usuario.getRol(), usuario.getNombre());
+    }
+
+    public UsuarioDto getCurrentUser() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var usuario = (Usuario) authentication.getPrincipal();
+        return UsuarioDto.fromUsuario(usuario);
+    }
+}
