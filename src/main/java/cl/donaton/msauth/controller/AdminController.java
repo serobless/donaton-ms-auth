@@ -30,6 +30,16 @@ public class AdminController {
         return ResponseEntity.ok(usuarios);
     }
 
+    @PatchMapping("/usuarios/{id}/centro")
+    public ResponseEntity<UsuarioDto> asignarCentro(@PathVariable Long id,
+                                                     @RequestBody Map<String, Object> body) {
+        Long centroId = body.get("centroId") != null ? Long.valueOf(body.get("centroId").toString()) : null;
+        Usuario u = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuario no encontrado"));
+        u.setCentroId(centroId);
+        return ResponseEntity.ok(UsuarioDto.fromUsuario(usuarioRepository.save(u)));
+    }
+
     @PatchMapping("/usuarios/{id}/rol")
     public ResponseEntity<UsuarioDto> cambiarRol(@PathVariable Long id,
                                                   @RequestBody Map<String, String> body) {

@@ -48,4 +48,11 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(Map.of("message", "El email ya está registrado"));
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, String>> handleGenericException(Exception e) {
+        String detail = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("message", "Error al registrar. Detalle: " + detail));
+    }
 }

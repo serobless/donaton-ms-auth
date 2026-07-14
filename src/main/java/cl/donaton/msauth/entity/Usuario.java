@@ -53,6 +53,8 @@ public class Usuario implements UserDetails {
     @Column(length = 20)
     private String rutEmpresa;
 
+    private Long centroId;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + rol.name()));

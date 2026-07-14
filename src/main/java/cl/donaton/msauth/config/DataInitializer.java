@@ -41,6 +41,32 @@ public class DataInitializer {
                         .build());
                 System.out.println(">> Usuario donante creado: juan@donaton.cl");
             }
+
+            // centroId = orden de creación en ms-donaciones (Quilicura=1, Santiago=2, Valparaíso=3, Concepción=4)
+            crearEncargado("Encargado Quilicura",    "encargado.quilicura@donaton.cl",  1L);
+            crearEncargado("Encargado Santiago",     "encargado.santiago@donaton.cl",   2L);
+            crearEncargado("Encargado Valparaíso",   "encargado.valparaiso@donaton.cl", 3L);
+            crearEncargado("Encargado Concepción",   "encargado.concepcion@donaton.cl", 4L);
         };
+    }
+
+    private void crearEncargado(String nombre, String email, Long centroId) {
+        usuarioRepository.findByEmail(email).ifPresentOrElse(u -> {
+            if (u.getCentroId() == null) {
+                u.setCentroId(centroId);
+                usuarioRepository.save(u);
+                System.out.println(">> CentroId asignado a: " + email + " → " + centroId);
+            }
+        }, () -> {
+            usuarioRepository.save(Usuario.builder()
+                    .nombre(nombre)
+                    .email(email)
+                    .password(passwordEncoder.encode("123456"))
+                    .rol(Rol.CENTRO_ADMIN)
+                    .centroId(centroId)
+                    .fechaRegistro(LocalDateTime.now())
+                    .build());
+            System.out.println(">> Encargado creado: " + email + " → centroId=" + centroId);
+        });
     }
 }
